@@ -1,0 +1,32 @@
+# Checkpoints and model weights
+*.pth
+*.pt
+
+# Training outputs
+run_lim_hybrid*/
+training_log_*.txt
+
+# Nested duplicate folder
+AD-SAM/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+*.env
+.conda/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store

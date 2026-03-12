@@ -1,0 +1,11 @@
+torch>=2.0
+torchvision>=0.15
+numpy
+pillow
+opencv-python
+matplotlib
+tqdm
+scipy
+git+https://github.com/facebookresearch/segment-anything.git
+# Optional: CRF post-processing (may need to build from source on Windows)
+# pip install git+https://github.com/lucasb-eyer/pydensecrf.git
