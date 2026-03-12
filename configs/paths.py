@@ -5,12 +5,12 @@ import os
 
 CITYSCAPES_ROOT = os.environ.get(
     "CITYSCAPES_ROOT",
-    os.path.join("D:" + os.sep, "datasets", "Cityscapes")
+    "/data/hpate061/Data/Cityscapes"
 )
 
 BDD100K_ROOT = os.environ.get(
     "BDD100K_ROOT",
-    os.path.join("D:" + os.sep, "datasets", "BDD100k_poly")
+    "/data/home/hpate061/datasets/BDD100k_poly"
 )
 
 CITYSCAPES_TRAIN_IMAGES = os.path.join(CITYSCAPES_ROOT, "leftImg8bit", "train")
@@ -25,5 +25,5 @@ BDD100K_VAL_MASKS    = os.path.join(BDD100K_ROOT, "labels", "sem_seg", "val")
 
 SAM_CHECKPOINT_PATH = os.environ.get(
     "SAM_CHECKPOINT_PATH",
-    os.path.join("D:" + os.sep, "models", "checkpoints", "sam_vit_h_4b8939.pth")
+    "/data/home/hpate061/models/checkpoints/sam_vit_h_4b8939.pth"
 )

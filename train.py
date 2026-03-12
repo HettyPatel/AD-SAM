@@ -13,6 +13,7 @@ from metrics.iou_metric import IoUMetric
 from utils.visualize import visualize_predictions_dual
 from configs.paths import *
 from utils.setup import *
+from datetime import datetime
 from configs.paths import SAM_CHECKPOINT_PATH
 from configs.paths import (CITYSCAPES_TRAIN_IMAGES, CITYSCAPES_TRAIN_MASKS,
                            CITYSCAPES_VAL_IMAGES, CITYSCAPES_VAL_MASKS,
@@ -53,11 +54,13 @@ parser.add_argument('--dataset_name', type=str,choices=['cityscapes', 'bdd100k']
 parser.add_argument('--num_epochs', type=int, default='100', help='max epochs')
 parser.add_argument("--apply_crf",action="store_true",default=False,help="apply CRF post-processing on network output")
 parser.add_argument("--loss",type=str, choices=['hybrid', 'focaldice'], default='hybrid', help='choose loss function')
-parser.add_argument("--gpu",type=int, choices=[0,1], default=0, help='choose gpu')
+parser.add_argument("--gpu",type=int, choices=[0,1,2], default=0, help='choose gpu')
+parser.add_argument("--batch_size",type=int, default=2, help='batch size for dataloaders')
 
 args = parser.parse_args()
 
-dir = f"ADSAM_{args.dataset_name}_{args.max_samples}_{args.loss}_crf_{args.apply_crf}"
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+dir = f"ADSAM_{args.dataset_name}_{args.max_samples}_{args.loss}_crf_{args.apply_crf}_{timestamp}"
 device = torch.device(f"cuda:{args.gpu}")
 
 # Set up logging to file
@@ -309,16 +312,14 @@ if __name__ == "__main__":
         image_dir=train_images,
         mask_dir=train_masks,
         max_samples=args.max_samples,
-        # batch_size=2,
-        # num_workers=4
+        batch_size=args.batch_size,
     )
     val_loader = get_dataloader(
         dataset_name=args.dataset_name,
         image_dir=val_images,
         mask_dir=val_masks,
         max_samples=(args.max_samples//2 if args.max_samples is not None else None),
-        # batch_size=2,
-        # num_workers=4
+        batch_size=args.batch_size,
     )    
     
     print(f"\n===+++===+++===+++===")
