@@ -1,0 +1,2 @@
+run_id,model,dataset,train_samples,ablation,loss,crf,batch_size,num_epochs,best_val_miou,best_epoch,road_iou,sidewalk_iou,building_iou,wall_iou,fence_iou,pole_iou,traffic_light_iou,traffic_sign_iou,vegetation_iou,terrain_iou,sky_iou,person_iou,rider_iou,car_iou,truck_iou,bus_iou,train_cls_iou,motorcycle_iou,bicycle_iou
+ADSAM_cityscapes_100_hybrid_crf_False_full_20260312_172335,AD-SAM,cityscapes,100,full,hybrid,False,2,100,0.4448,51,0.9436,0.6139,0.8255,0.1104,0.1383,0.3548,0.3252,0.5388,0.8766,0.4625,0.8432,0.6055,0.1001,0.8564,0.0000,0.1509,0.0000,0.1235,0.5819
