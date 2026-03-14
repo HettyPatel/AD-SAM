@@ -14,6 +14,7 @@ import os
 import re
 import csv
 import glob
+from datetime import datetime
 
 CLASS_NAMES = [
     "road", "sidewalk", "building", "wall", "fence", "pole",
@@ -201,7 +202,8 @@ def main():
     os.makedirs("results", exist_ok=True)
 
     # ── 1. Results summary CSV ───────────────────────────────────────────────
-    csv_path = "results/results_summary.csv"
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    csv_path = f"results/results_summary_{timestamp}.csv"
     fieldnames = [
         'log_file', 'model', 'dataset', 'train_samples', 'ablation', 'loss',
         'crf', 'batch_size', 'best_val_miou', 'best_epoch', 'final_train_miou',
@@ -215,7 +217,7 @@ def main():
     print(f"\nResults summary written to {csv_path}")
 
     # ── 2. Training curves CSV ───────────────────────────────────────────────
-    curves_path = "results/training_curves.csv"
+    curves_path = f"results/training_curves_{timestamp}.csv"
     curve_fields = ['experiment', 'model', 'dataset', 'train_samples', 'ablation',
                     'epoch', 'train_loss', 'train_miou', 'val_loss', 'val_miou']
     with open(curves_path, 'w', newline='') as f:
