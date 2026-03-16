@@ -6,6 +6,9 @@
 run_lim_hybrid*/
 training_log_*.txt
 
+# Pre-generated SAM embeddings (93GB+)
+embeddings/
+
 # Nested duplicate folder
 AD-SAM/
 

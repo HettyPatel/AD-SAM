@@ -22,7 +22,7 @@ GPU=0
 BATCH_SIZE=2     # batch size 2 to leave GPU headroom for others
 EPOCHS=100
 VIS_EVERY=25     # visualize every 25 epochs to save time/disk
-EMB_ROOT="/data2/hpate061/sam_embeddings"
+EMB_ROOT="embeddings"
 
 # Memory optimization
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
@@ -104,7 +104,7 @@ run_experiment "AD-SAM BDD100K 500 samples" 6 \
 run_experiment "AD-SAM BDD100K 1000 samples" 7 \
     "python train.py --dataset_name bdd100k --max_samples 1000 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
 
-run_experiment "AD-SAM BDD100K FULL (5968)" 8 \
+run_experiment "AD-SAM BDD100K FULL (7000)" 8 \
     "python train.py --dataset_name bdd100k --max_samples None --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
 
 

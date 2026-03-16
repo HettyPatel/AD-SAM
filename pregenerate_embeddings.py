@@ -126,7 +126,7 @@ def main():
                         choices=['cityscapes', 'bdd100k'])
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--output_root', type=str,
-                        default='/data2/hpate061/sam_embeddings',
+                        default='embeddings',
                         help='Root directory for cached embeddings')
     args = parser.parse_args()
 
