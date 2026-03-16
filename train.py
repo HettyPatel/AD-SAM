@@ -66,6 +66,8 @@ parser.add_argument("--batch_size",type=int, default=2, help='batch size for dat
 parser.add_argument("--ablation", type=str, choices=["full", "no_deform", "no_attention", "sam_encoder_only", "ce_loss"], default="full", help="ablation variant")
 parser.add_argument("--vis_every", type=int, default=1, help="generate visualizations every N epochs (0 to disable)")
 parser.add_argument("--max_val_samples", type=lambda x: None if x.lower() == 'none' else int(x), default=None, help="limit val samples (default: None = full val set)")
+parser.add_argument("--embedding_dir", type=str, default=None, help="root dir for pre-generated SAM embeddings (enables cached mode)")
+parser.add_argument("--flip_augment", action="store_true", default=False, help="enable horizontal flip augmentation (requires cached embeddings)")
 
 args = parser.parse_args()
 
@@ -177,12 +179,15 @@ def train_dual_encoder_cityscapes(
             # Move data to device
             images = batch_input["image"].to(device, dtype=torch.float32)
             target_masks = target_masks.to(device)
-            
+            sam_emb = batch_input.get("sam_embedding")
+            if sam_emb is not None:
+                sam_emb = sam_emb.to(device, dtype=torch.float32)
+
             optimizer.zero_grad()
-            
+
             # Forward pass with mixed precision
             with autocast("cuda"):
-                logits = model(images)
+                logits = model(images, sam_embedding=sam_emb)
                 
                 # Resize logits if needed
                 if logits.shape[-2:] != target_masks.shape[-2:]:
@@ -219,8 +224,11 @@ def train_dual_encoder_cityscapes(
             for batch_input, target_masks in tqdm(val_loader, desc='Validation'):
                 images      = batch_input["image"].to(device)
                 target_masks = target_masks.to(device)
+                sam_emb = batch_input.get("sam_embedding")
+                if sam_emb is not None:
+                    sam_emb = sam_emb.to(device, dtype=torch.float32)
 
-                logits = model(images)
+                logits = model(images, sam_embedding=sam_emb)
                 # Resize if necessary
                 if logits.shape[-2:] != target_masks.shape[-2:]:
                     logits = F.interpolate(
@@ -386,12 +394,21 @@ if __name__ == "__main__":
     # val_loader = get_cityscapes_dataloader(CITYSCAPES_VAL_IMAGES, CITYSCAPES_VAL_MASKS,max_samples=(args.max_samples//2 if args.max_samples is not None else None))
     
     
+    # Resolve per-split embedding directories if cached mode is enabled
+    train_emb_dir = None
+    val_emb_dir = None
+    if args.embedding_dir:
+        train_emb_dir = os.path.join(args.embedding_dir, args.dataset_name, 'train')
+        val_emb_dir = os.path.join(args.embedding_dir, args.dataset_name, 'val')
+
     train_loader = get_dataloader(
         dataset_name=args.dataset_name,
         image_dir=train_images,
         mask_dir=train_masks,
         max_samples=args.max_samples,
         batch_size=args.batch_size,
+        embedding_dir=train_emb_dir,
+        flip_augment=args.flip_augment,
     )
     val_loader = get_dataloader(
         dataset_name=args.dataset_name,
@@ -399,7 +416,9 @@ if __name__ == "__main__":
         mask_dir=val_masks,
         max_samples=args.max_val_samples,  # None = full val set; override for smoke tests
         batch_size=args.batch_size,
-    )    
+        embedding_dir=val_emb_dir,
+        flip_augment=False,  # no augmentation during validation
+    )
     
     print(f"\n===+++===+++===+++===")
     print('# Dataset: {}'.format(args.dataset_name))
@@ -410,6 +429,8 @@ if __name__ == "__main__":
     print(f"# Ablation: {args.ablation}")
     print(f"# GPU: {args.gpu}")
     print(f"# Batch Size: {args.batch_size}")
+    print(f"# Cached Embeddings: {args.embedding_dir or 'disabled'}")
+    print(f"# Flip Augment: {args.flip_augment}")
     print(f"===+++===+++===+++===")
     print('')
     

@@ -16,6 +16,14 @@ class DualEncoderDeformableDecoder(nn.Module):
         # SAM encoder
         self.sam_encoder = sam_model.image_encoder
 
+        # SAM normalization: convert ImageNet-normalized input to SAM-normalized
+        # ImageNet: (pixel/255 - mean_in) / std_in  =>  pixel = (x * std_in + mean_in) * 255
+        # SAM: (pixel - mean_sam) / std_sam
+        self.register_buffer('_imgnet_mean', torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1))
+        self.register_buffer('_imgnet_std', torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1))
+        self.register_buffer('_sam_mean', torch.tensor([123.675, 116.28, 103.53]).view(1, 3, 1, 1))
+        self.register_buffer('_sam_std', torch.tensor([58.395, 57.12, 57.375]).view(1, 3, 1, 1))
+
         # ResNet encoder
         resnet = models.resnet50(weights=torchvision.models.ResNet50_Weights.DEFAULT)
         self.resnet_encoder = create_feature_extractor(
@@ -47,13 +55,19 @@ class DualEncoderDeformableDecoder(nn.Module):
             nn.Conv2d(32, num_classes, 1)
         )
 
-    def forward(self, x):
+    def forward(self, x, sam_embedding=None):
         B, C, H, W = x.shape
         if (H, W) != (1024, 1024):
             x = F.interpolate(x, size=(1024, 1024), mode='bilinear', align_corners=False)
 
         # Encode
-        sam_features = self.sam_encoder(x)       # [B, 256, 64, 64]
+        if sam_embedding is not None:
+            sam_features = sam_embedding  # pre-computed [B, 256, 64, 64]
+        else:
+            # Re-normalize from ImageNet to SAM scale for the encoder
+            x_sam = (x * self._imgnet_std + self._imgnet_mean) * 255.0  # back to 0-255
+            x_sam = (x_sam - self._sam_mean) / self._sam_std
+            sam_features = self.sam_encoder(x_sam)  # [B, 256, 64, 64]
         resnet_features = self.resnet_encoder(x)
 
         # Fuse SAM + ResNet layer4 at 64x64

@@ -253,6 +253,7 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--gpu", type=int, choices=[0, 1, 2], default=0)
     parser.add_argument("--max_val_samples", type=lambda x: None if x.lower() == 'none' else int(x), default=None, help="limit val samples (default: None = full val set)")
+    parser.add_argument("--flip_augment", action="store_true", default=False, help="enable horizontal flip augmentation")
     args = parser.parse_args()
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -289,6 +290,7 @@ if __name__ == "__main__":
         mask_dir=train_masks,
         max_samples=args.max_samples,
         batch_size=args.batch_size,
+        flip_augment=args.flip_augment,
     )
     val_loader = get_dataloader(
         dataset_name=args.dataset_name,
@@ -296,6 +298,7 @@ if __name__ == "__main__":
         mask_dir=val_masks,
         max_samples=args.max_val_samples,  # None = full val set; override for smoke tests
         batch_size=args.batch_size,
+        flip_augment=False,  # no augmentation during validation
     )
 
     print(f"\n===+++===+++===+++===")

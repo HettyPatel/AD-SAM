@@ -1,4 +1,5 @@
 import os
+import random
 from PIL import Image
 import numpy as np
 import torch
@@ -16,11 +17,13 @@ class BDD100kDataset(Dataset):
         image_dir: str,
         annot_dir: str,
         target_size=(1024, 1024),
-        max_samples: int = None
+        max_samples: int = None,
+        flip_augment: bool = False,
     ):
         self.image_dir   = image_dir
         self.annot_dir   = annot_dir
         self.target_size = target_size
+        self.flip_augment = flip_augment
         self.ignore_index = 19
 
         # SAM's resize transform
@@ -57,6 +60,12 @@ class BDD100kDataset(Dataset):
         # Resize image & mask to target_size
         img_resized = img.resize(self.target_size, Image.BILINEAR)
         img_arr     = np.array(img_resized)
+
+        # Random horizontal flip
+        do_flip = self.flip_augment and random.random() > 0.5
+        if do_flip:
+            img_arr = img_arr[:, ::-1, :].copy()
+
         sam_img     = self.sam_transform.apply_image(img_arr)
         img_t       = torch.from_numpy(sam_img).permute(2, 0, 1).float() / 255.0
         mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
@@ -65,6 +74,8 @@ class BDD100kDataset(Dataset):
 
         mask = mask.resize(self.target_size, Image.NEAREST)
         mask_arr = np.array(mask).astype(np.int64)
+        if do_flip:
+            mask_arr = mask_arr[:, ::-1].copy()
         # Map 255 (BDD100K ignore) -> 19 (this project's ignore_index)
         mask_arr[mask_arr == 255] = self.ignore_index
         mask_t = torch.from_numpy(mask_arr).long()

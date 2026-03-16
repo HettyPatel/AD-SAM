@@ -50,6 +50,24 @@ class StandardFeatureFusion(nn.Module):
         return self.fusion_conv(combined)
 
 
+class NoDeformFeatureFusion(nn.Module):
+    """Fusion layer using standard convolutions but WITH channel attention."""
+    def __init__(self, sam_channels, resnet_channels):
+        super().__init__()
+        self.resnet_conv = nn.Conv2d(resnet_channels, sam_channels, 1)
+        self.fusion_conv = nn.Conv2d(sam_channels * 2, sam_channels, 3, padding=1)
+        self.channel_attention = ChannelAttention(sam_channels)
+        self.norm = nn.GroupNorm(8, sam_channels)
+        self.activation = nn.GELU()
+
+    def forward(self, sam_feat, resnet_feat):
+        resnet_feat = self.resnet_conv(resnet_feat)
+        combined = torch.cat([sam_feat, resnet_feat], dim=1)
+        fused = self.fusion_conv(combined)
+        fused = self.channel_attention(fused)
+        return self.activation(self.norm(fused))
+
+
 class NoAttentionFeatureFusion(nn.Module):
     """Deformable fusion WITHOUT channel attention."""
     def __init__(self, sam_channels, resnet_channels):
@@ -113,6 +131,12 @@ class SAMOnlyDecoder(nn.Module):
         super().__init__()
         self.sam_encoder = sam_model.image_encoder
 
+        # SAM normalization buffers (convert ImageNet-normalized input to SAM scale)
+        self.register_buffer('_imgnet_mean', torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1))
+        self.register_buffer('_imgnet_std', torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1))
+        self.register_buffer('_sam_mean', torch.tensor([123.675, 116.28, 103.53]).view(1, 3, 1, 1))
+        self.register_buffer('_sam_std', torch.tensor([58.395, 57.12, 57.375]).view(1, 3, 1, 1))
+
         # Simple progressive decoder from SAM's 256-ch 64x64 output
         self.up1 = self._make_up_block(256, 128)    # 64 -> 128
         self.up2 = self._make_up_block(128, 64)     # 128 -> 256
@@ -137,12 +161,18 @@ class SAMOnlyDecoder(nn.Module):
             nn.GELU(),
         )
 
-    def forward(self, x):
+    def forward(self, x, sam_embedding=None):
         B, C, H, W = x.shape
         if (H, W) != (1024, 1024):
             x = F.interpolate(x, size=(1024, 1024), mode='bilinear', align_corners=False)
 
-        sam_features = self.sam_encoder(x)  # [B, 256, 64, 64]
+        if sam_embedding is not None:
+            sam_features = sam_embedding
+        else:
+            # Re-normalize from ImageNet to SAM scale
+            x_sam = (x * self._imgnet_std + self._imgnet_mean) * 255.0
+            x_sam = (x_sam - self._sam_mean) / self._sam_std
+            sam_features = self.sam_encoder(x_sam)  # [B, 256, 64, 64]
 
         x = F.interpolate(sam_features, scale_factor=2, mode='bilinear', align_corners=False)
         x = self.up1(x)     # -> [B, 128, 128, 128]
@@ -182,9 +212,9 @@ def build_ablation_model(ablation, sam_model, num_classes=19):
 
     elif ablation == "no_deform":
         model = DualEncoderDeformableDecoder(sam_model, num_classes=num_classes)
-        # Replace fusion layer with standard (no deformable conv, no attention)
+        # Replace fusion layer: standard conv but KEEP channel attention
         model.fusion_layers = nn.ModuleList([
-            StandardFeatureFusion(256, 2048)
+            NoDeformFeatureFusion(256, 2048)
         ])
         # Replace deformable upsample blocks with standard conv blocks
         model.up1 = StandardUpsampleBlock(256, 128, skip_channels=1024)

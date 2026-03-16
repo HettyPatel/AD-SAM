@@ -55,9 +55,12 @@ def visualize_predictions_dual(
             device = next(model.parameters()).device
             images = batch_input["image"].to(device)
             target_masks = target_masks.to(device)
-            
+            sam_emb = batch_input.get("sam_embedding")
+            if sam_emb is not None:
+                sam_emb = sam_emb.to(device, dtype=torch.float32)
+
             # Forward pass
-            logits = model(images)
+            logits = model(images, sam_embedding=sam_emb)
             if logits.shape[-2:] != target_masks.shape[-2:]:
                 logits = F.interpolate(
                     logits,
