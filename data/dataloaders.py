@@ -6,7 +6,7 @@ from .bdd100k_dataset import BDD100kDataset
 from .cityscapes_cached_dataset import CityscapesCachedDataset
 from .bdd100k_cached_dataset import BDD100kCachedDataset
 
-_DEFAULT_WORKERS = 0 if os.name == "nt" else 4
+_DEFAULT_WORKERS = 0 if os.name == "nt" else 12
 
 def get_dataloader(dataset_name, image_dir, mask_dir, batch_size=2, num_workers=_DEFAULT_WORKERS, max_samples=None,target_size=(1024, 1024),
                    embedding_dir=None, flip_augment=False):
@@ -59,5 +59,7 @@ def get_dataloader(dataset_name, image_dir, mask_dir, batch_size=2, num_workers=
         num_workers=num_workers,
         shuffle=True,
         pin_memory=True,
+        persistent_workers=num_workers > 0,
+        prefetch_factor=4 if num_workers > 0 else None,
     )
     return dataloader

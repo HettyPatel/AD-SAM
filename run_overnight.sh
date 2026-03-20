@@ -83,36 +83,21 @@ echo "############################################################"
 echo "# GROUP 1: AD-SAM Data Efficiency                          #"
 echo "############################################################"
 
-run_experiment "AD-SAM Cityscapes 100 samples" 1 \
-    "python train.py --dataset_name cityscapes --max_samples 100 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
+# SKIP — already completed
+# run_experiment "AD-SAM Cityscapes 100 samples" 1 \
+#     "python train.py --dataset_name cityscapes --max_samples 100 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
+# run_experiment "AD-SAM Cityscapes 500 samples" 2 \
+#     "python train.py --dataset_name cityscapes --max_samples 500 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
+# run_experiment "AD-SAM Cityscapes 1000 samples" 3 \
+#     "python train.py --dataset_name cityscapes --max_samples 1000 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
+# run_experiment "AD-SAM Cityscapes FULL (2975)" 4 \
+#     "python train.py --dataset_name cityscapes --max_samples None --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
 
-run_experiment "AD-SAM Cityscapes 500 samples" 2 \
-    "python train.py --dataset_name cityscapes --max_samples 500 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
-
-run_experiment "AD-SAM Cityscapes 1000 samples" 3 \
-    "python train.py --dataset_name cityscapes --max_samples 1000 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
-
-run_experiment "AD-SAM Cityscapes FULL (2975)" 4 \
-    "python train.py --dataset_name cityscapes --max_samples None --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
-
-run_experiment "AD-SAM BDD100K 100 samples" 5 \
-    "python train.py --dataset_name bdd100k --max_samples 100 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
-
-run_experiment "AD-SAM BDD100K 500 samples" 6 \
-    "python train.py --dataset_name bdd100k --max_samples 500 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
-
-run_experiment "AD-SAM BDD100K 1000 samples" 7 \
-    "python train.py --dataset_name bdd100k --max_samples 1000 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
-
-run_experiment "AD-SAM BDD100K FULL (7000)" 8 \
-    "python train.py --dataset_name bdd100k --max_samples None --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
-
-
-# ── GROUP 2: DeepLabV3 Baseline ──────────────────────────────────────────────
+# ── GROUP 2: DeepLabV3 Baseline (Cityscapes) ────────────────────────────────
 
 echo ""
 echo "############################################################"
-echo "# GROUP 2: DeepLabV3 Baseline (fair comparison)            #"
+echo "# GROUP 2: DeepLabV3 Baseline - Cityscapes                 #"
 echo "############################################################"
 
 run_experiment "DeepLabV3 Cityscapes 100 samples" 9 \
@@ -127,56 +112,88 @@ run_experiment "DeepLabV3 Cityscapes 1000 samples" 11 \
 run_experiment "DeepLabV3 Cityscapes FULL" 12 \
     "python train_deeplabv3.py --dataset_name cityscapes --num_epochs $EPOCHS --batch_size $BATCH_SIZE --gpu $GPU --flip_augment"
 
+# ── GROUP 3: AD-SAM BDD100K ─────────────────────────────────────────────────
+
+echo ""
+echo "############################################################"
+echo "# GROUP 3: AD-SAM BDD100K                                  #"
+echo "############################################################"
+
+run_experiment "AD-SAM BDD100K 100 samples" 5 \
+    "python train.py --dataset_name bdd100k --max_samples 100 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
+
+run_experiment "AD-SAM BDD100K 500 samples" 6 \
+    "python train.py --dataset_name bdd100k --max_samples 500 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
+
+run_experiment "AD-SAM BDD100K 1000 samples" 7 \
+    "python train.py --dataset_name bdd100k --max_samples 1000 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
+
+run_experiment "AD-SAM BDD100K FULL (7000)" 8 \
+    "python train.py --dataset_name bdd100k --max_samples None --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
+
+# ── GROUP 4: DeepLabV3 Baseline (BDD100K) ───────────────────────────────────
+
+echo ""
+echo "############################################################"
+echo "# GROUP 4: DeepLabV3 Baseline - BDD100K                    #"
+echo "############################################################"
+
 run_experiment "DeepLabV3 BDD100K 100 samples" 13 \
     "python train_deeplabv3.py --dataset_name bdd100k --max_samples 100 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --gpu $GPU --flip_augment"
 
-run_experiment "DeepLabV3 BDD100K FULL" 14 \
+run_experiment "DeepLabV3 BDD100K 500 samples" 14 \
+    "python train_deeplabv3.py --dataset_name bdd100k --max_samples 500 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --gpu $GPU --flip_augment"
+
+run_experiment "DeepLabV3 BDD100K 1000 samples" 15 \
+    "python train_deeplabv3.py --dataset_name bdd100k --max_samples 1000 --num_epochs $EPOCHS --batch_size $BATCH_SIZE --gpu $GPU --flip_augment"
+
+run_experiment "DeepLabV3 BDD100K FULL" 16 \
     "python train_deeplabv3.py --dataset_name bdd100k --num_epochs $EPOCHS --batch_size $BATCH_SIZE --gpu $GPU --flip_augment"
 
 
-# ── GROUP 3: Ablation Study ─────────────────────────────────────────────────
+# ── GROUP 5: Ablation Study ─────────────────────────────────────────────────
 # All on Cityscapes full dataset, 100 epochs
 # Note: "full" ablation = same as Exp #4, skip if already ran
 
 echo ""
 echo "############################################################"
-echo "# GROUP 3: Ablation Study (Cityscapes full)                #"
+echo "# GROUP 5: Ablation Study (Cityscapes full)                #"
 echo "############################################################"
 
-# Exp 4 (full) already covers the baseline — skip #15
+# Exp 4 (full) already covers the baseline
 
-run_experiment "Ablation: no_deform (Cityscapes full)" 16 \
+run_experiment "Ablation: no_deform (Cityscapes full)" 17 \
     "python train.py --dataset_name cityscapes --max_samples None --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --ablation no_deform --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
 
-run_experiment "Ablation: no_attention (Cityscapes full)" 17 \
+run_experiment "Ablation: no_attention (Cityscapes full)" 18 \
     "python train.py --dataset_name cityscapes --max_samples None --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --ablation no_attention --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
 
-run_experiment "Ablation: sam_encoder_only (Cityscapes full)" 18 \
+run_experiment "Ablation: sam_encoder_only (Cityscapes full)" 19 \
     "python train.py --dataset_name cityscapes --max_samples None --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --ablation sam_encoder_only --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
 
-run_experiment "Ablation: ce_loss (Cityscapes full)" 19 \
+run_experiment "Ablation: ce_loss (Cityscapes full)" 20 \
     "python train.py --dataset_name cityscapes --max_samples None --num_epochs $EPOCHS --batch_size $BATCH_SIZE --ablation ce_loss --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
 
 
-# ── GROUP 4: CRF Post-Processing ────────────────────────────────────────────
+# ── GROUP 6: CRF Post-Processing ────────────────────────────────────────────
 
 echo ""
 echo "############################################################"
-echo "# GROUP 4: CRF Post-Processing                            #"
+echo "# GROUP 6: CRF Post-Processing                            #"
 echo "############################################################"
 
-run_experiment "AD-SAM Cityscapes FULL + CRF" 20 \
+run_experiment "AD-SAM Cityscapes FULL + CRF" 21 \
     "python train.py --dataset_name cityscapes --max_samples None --num_epochs $EPOCHS --batch_size $BATCH_SIZE --loss hybrid --apply_crf --gpu $GPU --vis_every $VIS_EVERY --embedding_dir $EMB_ROOT --flip_augment"
 
 
-# ── GROUP 5: Efficiency Metrics ──────────────────────────────────────────────
+# ── GROUP 7: Efficiency Metrics ──────────────────────────────────────────────
 
 echo ""
 echo "############################################################"
-echo "# GROUP 5: Efficiency Metrics                              #"
+echo "# GROUP 7: Efficiency Metrics                              #"
 echo "############################################################"
 
-run_experiment "Compute Efficiency (params/FLOPs/latency)" 21 \
+run_experiment "Compute Efficiency (params/FLOPs/latency)" 22 \
     "python compute_efficiency.py --gpu $GPU"
 
 
