@@ -204,7 +204,7 @@ def build_ablation_model(ablation, sam_model, num_classes=19):
     Returns:
         nn.Module: the constructed model
     """
-    from models.dual_encoder import DualEncoderDeformableDecoder
+    from adsam.models.dual_encoder import DualEncoderDeformableDecoder
 
     if ablation in ("full", "ce_loss"):
         # ce_loss uses the full architecture, just a different loss function
