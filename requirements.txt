@@ -1,0 +1,12 @@
+torch>=2.1
+torchvision>=0.16
+numpy
+pillow
+opencv-python
+scipy
+tqdm
+matplotlib
+tensorboard
+segment-anything @ git+https://github.com/facebookresearch/segment-anything.git
+# optional, for --apply_crf:
+# pydensecrf @ git+https://github.com/lucasb-eyer/pydensecrf.git

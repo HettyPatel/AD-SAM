@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adsam"
+version = "1.0.0"
+description = "AD-SAM: frozen SAM ViT-H + trainable ResNet-50 dual encoder with a deformable decoder for driving-scene semantic segmentation"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Mario Camarena"}, {name = "Het Patel"}]
+dependencies = ["torch>=2.1", "torchvision>=0.16", "numpy", "pillow", "opencv-python", "scipy", "tqdm", "matplotlib", "tensorboard"]
+
+[tool.setuptools.packages.find]
+include = ["adsam*"]

@@ -1,0 +1,22 @@
+# data, weights, caches
+/data/
+/checkpoints/
+/embeddings
+/embeddings/
+*.pth
+*.pt
+# run outputs
+results/
+*.log
+# python
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+# env / editors / os
+.env
+venv/
+.vscode/
+.idea/
+.DS_Store
