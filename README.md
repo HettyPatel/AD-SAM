@@ -6,7 +6,7 @@ AD-SAM pairs SAM's frozen ViT-H image encoder with a trainable ResNet-50, fuses 
 
 Paper: *AD-SAM: Fine-Tuning the Segment Anything Vision Foundation Model for Autonomous Driving Perception*, Camarena, Patel, Nazari, Papalexakis, Noruzoliaee, Chen. [arXiv:2510.27047](https://arxiv.org/abs/2510.27047)
 
-![AD-SAM architecture](docs/figures/architecture.png)
+![AD-SAM architecture](docs/figures/adsam_architecture.png)
 
 ## How it works
 
