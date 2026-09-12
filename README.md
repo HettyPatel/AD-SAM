@@ -2,7 +2,7 @@
 
 **Frozen Segment Anything features + a trainable CNN branch for driving-scene semantic segmentation.**
 
-AD-SAM pairs SAM's frozen ViT-H image encoder with a trainable ResNet-50, fuses the two feature streams at 64×64 with a modulated deformable convolution and channel attention, and decodes to stride 4 through three deformable blocks with ResNet skip connections. Only 27M of its 664M parameters are trained. Because the SAM encoder never changes, its embeddings are computed once per image and cached, so a full 100-epoch Cityscapes run takes about a day on one GPU.
+AD-SAM pairs SAM's frozen ViT-H image encoder with a trainable ResNet-50, fuses the two feature streams at 64×64 with a modulated deformable convolution and channel attention, and decodes to stride 4 through three deformable blocks with ResNet skip connections. Only 27M of its 664M parameters are trained. Because the SAM encoder never changes, its embeddings are computed once per image and cached.
 
 Paper: *AD-SAM: Fine-Tuning the Segment Anything Vision Foundation Model for Autonomous Driving Perception*, Camarena, Patel, Nazari, Papalexakis, Noruzoliaee, Chen. [arXiv:2510.27047](https://arxiv.org/abs/2510.27047)
 
