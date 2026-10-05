@@ -78,11 +78,6 @@ python train.py deeplabv3 --dataset_name cityscapes --flip_augment
 # Data-efficiency point: 500 training images
 python train.py adsam --dataset_name cityscapes --max_samples 500 --embedding_dir embeddings --flip_augment
 
-# Ablations (same decoder, one component removed)
-python train.py adsam --ablation no_deform        --embedding_dir embeddings --flip_augment
-python train.py adsam --ablation no_attention     --embedding_dir embeddings --flip_augment
-python train.py adsam --ablation sam_encoder_only --embedding_dir embeddings --flip_augment
-python train.py adsam --ablation ce_loss          --embedding_dir embeddings --flip_augment
 ```
 
 `python train.py adsam --help` and `python train.py deeplabv3 --help` list every option. Useful ones: `--max_samples N`, `--num_epochs`, `--batch_size`, `--gpu`, `--seed`, `--eval_native`, `--output_dir`, `--vis_every`, `--apply_crf`.
